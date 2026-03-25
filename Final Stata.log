@@ -1,0 +1,429 @@
+-------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/admin/Downloads/Final Stata .log
+  log type:  text
+ opened on:   7 Dec 2024, 21:57:17
+
+. gen index = _n
+
+. tsset index 
+
+Time variable: index, 1 to 137
+        Delta: 1 unit
+
+. gen ldcoilwtico = log(dcoilwtico)
+
+. gen lgdpc1 = log(gdpc1)
+
+. gen lcpaltt01usm657n = log(cpaltt01usm657n)
+(21 missing values generated)
+
+. gen dcoilwtico_lag = L.dcoilwtico
+(1 missing value generated)
+
+. gen fedfunds_lag = L.fedfunds
+(1 missing value generated)
+
+. gen cpaltt01usm657n_lag = L.cpaltt01usm657n
+(1 missing value generated)
+
+. gen gdpc1_lag = L.gdpc1
+(1 missing value generated)
+
+. gen dcoilwtico_growth = 100 * (ldcoilwtico - log(dcoilwtico_lag))
+(1 missing value generated)
+
+. gen gdpc1_growth = 100 * (lgdpc1 - log(gdpc1_lag))
+(1 missing value generated)
+
+. gen cpaltt01usm657n_growth = 100 * (lcpaltt01usm657n - log(cpaltt01usm657n_lag))
+(40 missing values generated)
+
+. gen gdpc1_growth_lag = L.gdpc1_growth
+(2 missing values generated)
+
+. gen cpaltt01usm657n_growth_lag = L.cpaltt01usm657n_growth
+(40 missing values generated)
+
+.  gen covid = 0 
+
+. replace covid = 1 if index > 117 &  index < 134
+(16 real changes made)
+
+. gen inter = covid * fedfunds_lag
+(1 missing value generated)
+
+. reg dcoilwtico_growth gdpc1_growth_lag fedfunds_lag cpaltt01usm657n_growth_lag covid inter
+
+      Source |       SS           df       MS      Number of obs   =        97
+-------------+----------------------------------   F(5, 91)        =      4.00
+       Model |  3200.37402         5  640.074804   Prob > F        =    0.0025
+    Residual |   14568.997        91  160.098868   R-squared       =    0.1801
+-------------+----------------------------------   Adj R-squared   =    0.1351
+       Total |   17769.371        96  185.097615   Root MSE        =    12.653
+
+--------------------------------------------------------------------------------------------
+         dcoilwtico_growth | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+          gdpc1_growth_lag |   7.014336   2.327817     3.01   0.003     2.390413    11.63826
+              fedfunds_lag |  -.0738148   .5987517    -0.12   0.902    -1.263162    1.115532
+cpaltt01usm657n_growth_lag |   .0027156   .0079603     0.34   0.734    -.0130966    .0185278
+                     covid |   7.502688   5.789697     1.30   0.198    -3.997835    19.00321
+                     inter |   -11.3644   4.068888    -2.79   0.006    -19.44675   -3.282057
+                     _cons |  -2.678462   2.893494    -0.93   0.357    -8.426032    3.069108
+--------------------------------------------------------------------------------------------
+
+. ovtest
+
+Ramsey RESET test for omitted variables
+Omitted: Powers of fitted values of dcoilwtico_growth
+
+H0: Model has no omitted variables
+
+F(3, 88) =   1.89
+Prob > F = 0.1370
+
+. vif
+
+    Variable |       VIF       1/VIF  
+-------------+----------------------
+       covid |      2.20    0.454201
+       inter |      1.97    0.508218
+fedfunds_lag |      1.19    0.839139
+cpaltt~h_lag |      1.03    0.973125
+gdpc1_grow~g |      1.02    0.977477
+-------------+----------------------
+    Mean VIF |      1.48
+
+. hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of dcoilwtico_growth
+
+H0: Constant variance
+
+    chi2(1) =   9.60
+Prob > chi2 = 0.0019
+
+. dwstat
+
+Number of gaps in sample = 15
+
+Durbin–Watson d-statistic(  6,    97) =  1.277143
+
+. gen dcoilwtico_growth_lag = L.dcoilwtico_growth 
+(2 missing values generated)
+
+. reg dcoilwtico_growth_lag gdpc1_growth_lag fedfunds_lag cpaltt01usm657n_growth_lag covid inter
+
+      Source |       SS           df       MS      Number of obs   =        97
+-------------+----------------------------------   F(5, 91)        =      1.65
+       Model |  1279.93045         5  255.986089   Prob > F        =    0.1549
+    Residual |  14120.6051        91  155.171485   R-squared       =    0.0831
+-------------+----------------------------------   Adj R-squared   =    0.0327
+       Total |  15400.5356        96  160.422246   Root MSE        =    12.457
+
+--------------------------------------------------------------------------------------------
+     dcoilwtico_growth_lag | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+          gdpc1_growth_lag |   .7070489   2.291716     0.31   0.758    -3.845162     5.25926
+              fedfunds_lag |  -.7788154   .5894658    -1.32   0.190    -1.949717     .392086
+cpaltt01usm657n_growth_lag |    .007366   .0078369     0.94   0.350     -.008201    .0229329
+                     covid |   6.422657   5.699906     1.13   0.263    -4.899506    17.74482
+                     inter |  -7.737669   4.005784    -1.93   0.057    -15.69467    .2193293
+                     _cons |   6.312702   2.848619     2.22   0.029     .6542701    11.97113
+--------------------------------------------------------------------------------------------
+
+. ovtest
+
+Ramsey RESET test for omitted variables
+Omitted: Powers of fitted values of dcoilwtico_growth_lag
+
+H0: Model has no omitted variables
+
+F(3, 88) =   0.69
+Prob > F = 0.5603
+
+. vif
+
+    Variable |       VIF       1/VIF  
+-------------+----------------------
+       covid |      2.20    0.454201
+       inter |      1.97    0.508218
+fedfunds_lag |      1.19    0.839139
+cpaltt~h_lag |      1.03    0.973125
+gdpc1_grow~g |      1.02    0.977477
+-------------+----------------------
+    Mean VIF |      1.48
+
+. hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of dcoilwtico_growth_lag
+
+H0: Constant variance
+
+    chi2(1) =   2.19
+Prob > chi2 = 0.1387
+
+. dwstat
+
+Number of gaps in sample = 15
+
+Durbin–Watson d-statistic(  6,    97) =  1.422413
+
+. reg dcoilwtico_growth gdpc1_growth_lag fedfunds_lag cpaltt01usm657n_growth_lag covid inter, robust 
+
+Linear regression                               Number of obs     =         97
+                                                F(5, 91)          =       3.74
+                                                Prob > F          =     0.0040
+                                                R-squared         =     0.1801
+                                                Root MSE          =     12.653
+
+--------------------------------------------------------------------------------------------
+                           |               Robust
+         dcoilwtico_growth | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+          gdpc1_growth_lag |   7.014336    3.30928     2.12   0.037     .4408576    13.58781
+              fedfunds_lag |  -.0738148   .7452916    -0.10   0.921    -1.554245    1.406615
+cpaltt01usm657n_growth_lag |   .0027156   .0075388     0.36   0.720    -.0122593    .0176905
+                     covid |   7.502688   5.699656     1.32   0.191    -3.818979    18.82436
+                     inter |   -11.3644   3.799004    -2.99   0.004    -18.91066   -3.818148
+                     _cons |  -2.678462    3.08987    -0.87   0.388     -8.81611    3.459186
+--------------------------------------------------------------------------------------------
+
+. dwstat
+
+Number of gaps in sample = 15
+
+Durbin–Watson d-statistic(  6,    97) =  1.277143
+
+. prais  dcoilwtico_growth gdpc1_growth_lag fedfunds_lag cpaltt01usm657n_growth_lag covid inter, corc
+
+Number of gaps in sample = 15
+note: computations for rho restarted at each gap.
+
+Iteration 0:   rho = 0.0000
+Iteration 1:   rho = 0.1609
+Iteration 2:   rho = 0.1672
+Iteration 3:   rho = 0.1681
+Iteration 4:   rho = 0.1682
+Iteration 5:   rho = 0.1682
+Iteration 6:   rho = 0.1682
+Iteration 7:   rho = 0.1682
+
+Cochrane–Orcutt AR(1) regression with iterated estimates
+
+      Source |       SS           df       MS      Number of obs   =        81
+-------------+----------------------------------   F(5, 75)        =      4.15
+       Model |  2788.42063         5  557.684125   Prob > F        =    0.0022
+    Residual |  10080.2762        75  134.403683   R-squared       =    0.2167
+-------------+----------------------------------   Adj R-squared   =    0.1645
+       Total |  12868.6969        80  160.858711   Root MSE        =    11.593
+
+--------------------------------------------------------------------------------------------
+         dcoilwtico_growth | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+          gdpc1_growth_lag |   7.950632   2.278405     3.49   0.001     3.411815    12.48945
+              fedfunds_lag |   -.799611   .7834223    -1.02   0.311    -2.360268    .7610463
+cpaltt01usm657n_growth_lag |   .0070883   .0072961     0.97   0.334    -.0074464    .0216229
+                     covid |   .6553841   7.128917     0.09   0.927    -13.54615    14.85692
+                     inter |  -9.194535    5.17068    -1.78   0.079    -19.49506    1.105988
+                     _cons |   -1.93955    3.70708    -0.52   0.602    -9.324432    5.445333
+---------------------------+----------------------------------------------------------------
+                       rho |     .16819
+--------------------------------------------------------------------------------------------
+Durbin–Watson statistic (original)    = 1.277143
+Durbin–Watson statistic (transformed) = 1.800568
+
+. hettest
+last estimates not found
+r(301);
+
+. prais  dcoilwtico_growth gdpc1_growth_lag fedfunds_lag cpaltt01usm657n_growth_lag covid inter, corc robust
+
+Number of gaps in sample = 15
+note: computations for rho restarted at each gap.
+
+Iteration 0:   rho = 0.0000
+Iteration 1:   rho = 0.1609
+Iteration 2:   rho = 0.1672
+Iteration 3:   rho = 0.1681
+Iteration 4:   rho = 0.1682
+Iteration 5:   rho = 0.1682
+Iteration 6:   rho = 0.1682
+Iteration 7:   rho = 0.1682
+
+Cochrane–Orcutt AR(1) regression with iterated estimates
+
+Linear regression                               Number of obs     =         81
+                                                F(5, 75)          =       2.86
+                                                Prob > F          =     0.0202
+                                                R-squared         =     0.2167
+                                                Root MSE          =     11.593
+
+--------------------------------------------------------------------------------------------
+                           |             Semirobust
+         dcoilwtico_growth | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+          gdpc1_growth_lag |   7.950632   3.208989     2.48   0.015     1.557998    14.34327
+              fedfunds_lag |   -.799611   .8384486    -0.95   0.343    -2.469886    .8706642
+cpaltt01usm657n_growth_lag |   .0070883   .0070545     1.00   0.318    -.0069651    .0211416
+                     covid |   .6553841   6.460859     0.10   0.919    -12.21531    13.52608
+                     inter |  -9.194535   5.052984    -1.82   0.073    -19.26059    .8715243
+                     _cons |   -1.93955   3.832569    -0.51   0.614    -9.574419     5.69532
+---------------------------+----------------------------------------------------------------
+                       rho |     .16819
+--------------------------------------------------------------------------------------------
+Durbin–Watson statistic (original)    = 1.277143
+Durbin–Watson statistic (transformed) = 1.800568
+
+. twoway (line cpaltt01usm657n__growth_lag index, lcolor(blue))
+variable cpaltt01usm657n__growth_lag not found
+r(111);
+
+. twoway (line cpaltt01usm657n_growth_lag index, lcolor(blue))
+
+. twoway (line dcoilwtico index, lcolor(blue))
+
+. twoway (line ldcoilwtico index, lcolor(blue))
+
+. twoway (line fedfunds index, lcolor(blue))
+
+. twoway (line fedfunds_lag index, lcolor(blue))
+
+. twoway (line ldcoilwtico index, lcolor(blue))
+
+. twoway (line ldcoilwtico index, lcolor(blue))
+
+. graph save "Graph" "/Users/admin/Downloads/Graph.gph"
+file /Users/admin/Downloads/Graph.gph saved
+
+. graph save "Graph" "/Users/admin/Downloads/Graph.gph", replace
+file /Users/admin/Downloads/Graph.gph saved
+
+. twoway (line dcoilwtico index, lcolor(blue))
+
+. graph save "Graph" "/Users/admin/Downloads/Graph.gph", replace
+file /Users/admin/Downloads/Graph.gph saved
+
+. graph save "Graph" "/Users/admin/Downloads/Graph.gph", replace
+file /Users/admin/Downloads/Graph.gph saved
+
+. twoway (line cpaltt01usm657n_growth_lag index, lcolor(blue))
+
+. graph save "Graph" "/Users/admin/Downloads/Graph.gph", replace
+file /Users/admin/Downloads/Graph.gph saved
+
+. graph save "Graph" "/Users/admin/Downloads/Graph.gph", replace
+file /Users/admin/Downloads/Graph.gph saved
+
+. graph save "Graph" "/Users/admin/Downloads/Graph.gph", replace
+file /Users/admin/Downloads/Graph.gph saved
+
+. graph save "Graph" "/Users/admin/Downloads/Graph.gph", replace
+file /Users/admin/Downloads/Graph.gph saved
+
+. prais  dcoilwtico_growth gdpc1_growth_lag fedfunds_lag cpaltt01usm657n_growth_lag covid inter, corc
+>  robust
+
+Number of gaps in sample = 15
+note: computations for rho restarted at each gap.
+
+Iteration 0:   rho = 0.0000
+Iteration 1:   rho = 0.1609
+Iteration 2:   rho = 0.1672
+Iteration 3:   rho = 0.1681
+Iteration 4:   rho = 0.1682
+Iteration 5:   rho = 0.1682
+Iteration 6:   rho = 0.1682
+Iteration 7:   rho = 0.1682
+
+Cochrane–Orcutt AR(1) regression with iterated estimates
+
+Linear regression                               Number of obs     =         81
+                                                F(5, 75)          =       2.86
+                                                Prob > F          =     0.0202
+                                                R-squared         =     0.2167
+                                                Root MSE          =     11.593
+
+--------------------------------------------------------------------------------------------
+                           |             Semirobust
+         dcoilwtico_growth | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+          gdpc1_growth_lag |   7.950632   3.208989     2.48   0.015     1.557998    14.34327
+              fedfunds_lag |   -.799611   .8384486    -0.95   0.343    -2.469886    .8706642
+cpaltt01usm657n_growth_lag |   .0070883   .0070545     1.00   0.318    -.0069651    .0211416
+                     covid |   .6553841   6.460859     0.10   0.919    -12.21531    13.52608
+                     inter |  -9.194535   5.052984    -1.82   0.073    -19.26059    .8715243
+                     _cons |   -1.93955   3.832569    -0.51   0.614    -9.574419     5.69532
+---------------------------+----------------------------------------------------------------
+                       rho |     .16819
+--------------------------------------------------------------------------------------------
+Durbin–Watson statistic (original)    = 1.277143
+Durbin–Watson statistic (transformed) = 1.800568
+
+. ovtest
+last estimates not found
+r(301);
+
+. prais  dcoilwtico_growth gdpc1_growth_lag fedfunds_lag cpaltt01usm657n_growth_lag covid inter, corc
+>  robust
+
+Number of gaps in sample = 15
+note: computations for rho restarted at each gap.
+
+Iteration 0:   rho = 0.0000
+Iteration 1:   rho = 0.1609
+Iteration 2:   rho = 0.1672
+Iteration 3:   rho = 0.1681
+Iteration 4:   rho = 0.1682
+Iteration 5:   rho = 0.1682
+Iteration 6:   rho = 0.1682
+Iteration 7:   rho = 0.1682
+
+Cochrane–Orcutt AR(1) regression with iterated estimates
+
+Linear regression                               Number of obs     =         81
+                                                F(5, 75)          =       2.86
+                                                Prob > F          =     0.0202
+                                                R-squared         =     0.2167
+                                                Root MSE          =     11.593
+
+--------------------------------------------------------------------------------------------
+                           |             Semirobust
+         dcoilwtico_growth | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+          gdpc1_growth_lag |   7.950632   3.208989     2.48   0.015     1.557998    14.34327
+              fedfunds_lag |   -.799611   .8384486    -0.95   0.343    -2.469886    .8706642
+cpaltt01usm657n_growth_lag |   .0070883   .0070545     1.00   0.318    -.0069651    .0211416
+                     covid |   .6553841   6.460859     0.10   0.919    -12.21531    13.52608
+                     inter |  -9.194535   5.052984    -1.82   0.073    -19.26059    .8715243
+                     _cons |   -1.93955   3.832569    -0.51   0.614    -9.574419     5.69532
+---------------------------+----------------------------------------------------------------
+                       rho |     .16819
+--------------------------------------------------------------------------------------------
+Durbin–Watson statistic (original)    = 1.277143
+Durbin–Watson statistic (transformed) = 1.800568
+
+. ovtest
+last estimates not found
+r(301);
+
+. vif
+not appropriate after regress, nocons;
+use option uncentered to get uncentered VIFs
+r(301);
+
+. hettest
+last estimates not found
+r(301);
+
+. log close
+      name:  <unnamed>
+       log:  /Users/admin/Downloads/Final Stata .log
+  log type:  text
+ closed on:   9 Dec 2024, 07:49:56
+-----------------------------------------------------------------------------------------------------
